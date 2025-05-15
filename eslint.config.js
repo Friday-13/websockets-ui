@@ -1,51 +1,37 @@
-import js from "@eslint/js"
-import globals from "globals"
-import tseslint from "typescript-eslint"
-import json from "@eslint/json"
-import markdown from "@eslint/markdown"
-import { defineConfig, globalIgnores } from "eslint/config"
+import eslintPluginPrettier from 'eslint-plugin-prettier';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
+import parser from '@typescript-eslint/parser';
 
-export default defineConfig([
-
+export default [
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
-    plugins: { js },
-    extends: ["js/recommended"],
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescriptPlugin,
+      prettier: eslintPluginPrettier,
+    },
+    rules: {
+      ...typescriptPlugin.configs.recommended.rules,
+      ...eslintConfigPrettier.rules,
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-console': 'warn',
+    },
   },
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
-    languageOptions: { globals: globals.node },
+    ignores: ['dist/**', 'node_modules/**'],
   },
-  tseslint.configs.recommended,
-  {
-    files: ["**/*.json"],
-    plugins: { json },
-    language: "json/json",
-    extends: ["json/recommended"],
-  },
-  {
-    files: ["**/*.jsonc"],
-    plugins: { json },
-    language: "json/jsonc",
-    extends: ["json/recommended"],
-  },
-  {
-    files: ["**/*.json5"],
-    plugins: { json },
-    language: "json/json5",
-    extends: ["json/recommended"],
-  },
-  {
-    files: ["**/*.md"],
-    plugins: { markdown },
-    language: "markdown/gfm",
-    extends: ["markdown/recommended"],
-  },
-  globalIgnores([
-    "dist/",
-    "front/",
-    "webpack.config.js",
-    "package*.json",
-    "tsconfig.json",
-  ]),
-])
+];

@@ -1,5 +1,0 @@
-dist
-coverage
-front/*
-*.yaml
-.eslintrc.js

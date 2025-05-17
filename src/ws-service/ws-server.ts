@@ -1,0 +1,48 @@
+import { RawData, WebSocket, WebSocketServer } from 'ws';
+import getDb from '../db/get-db';
+import { TMessage, TMessageType } from '../api/message-map';
+import Router from './router';
+import { regRoute } from '../api/registration';
+import { ConnectionModel } from '../db/connection-repository';
+
+const router = new Router();
+router.addRoute(regRoute);
+const wsMessageHandler = <T extends TMessageType>(
+  ws: WebSocket,
+  msg: RawData
+) => {
+  try {
+    let data: TMessage<T, 'request'>;
+    const parsedMessage = JSON.parse(String(msg));
+    const parsedData = JSON.parse(parsedMessage.data);
+    data = parsedMessage;
+    data.data = parsedData;
+    router.handler(ws, data.type, data);
+  } catch (err) {
+    //eslint-disable-next-line no-console
+    console.error(err);
+  }
+};
+
+const wsConnectionClosed = (connection: ConnectionModel) => {
+  const db = getDb();
+  db.connections.delete(connection.id);
+};
+
+const addConnection = (ws: WebSocket) => {
+  const db = getDb();
+  const connection = db.connections.create({ ws });
+
+  ws.on('message', (data) => wsMessageHandler(ws, data));
+  ws.on('close', () => wsConnectionClosed(connection));
+};
+
+let wss: WebSocketServer;
+const createWSServer = (port: number) => {
+  if (!wss) {
+    wss = new WebSocketServer({ port });
+    wss.on('connection', addConnection);
+  }
+};
+
+export { wss, createWSServer };

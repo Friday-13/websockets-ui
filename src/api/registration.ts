@@ -1,7 +1,9 @@
+import { WebSocket } from 'ws';
 import { TDataBase } from '../db/init-db';
 import { UserModel } from '../db/user-repository';
 import AuthError from '../errors/auth-error';
 import InputValidationError from '../errors/input-validation-error';
+import stringifyResponse from '../utils/stringify-response';
 import Route from '../ws-service/route';
 import { TMessage } from './message-map';
 
@@ -23,10 +25,12 @@ const validatePassword = (password: string) => {
 const regHandler = ({
   data,
   db,
+  ws,
 }: {
   data: TMessage<'reg', 'request'>;
   db: TDataBase;
-}): TMessage<'reg', 'response'> => {
+  ws: WebSocket;
+}) => {
   const { name, password } = data.data;
   let errorText = '';
   let error = false;
@@ -61,6 +65,7 @@ const regHandler = ({
       index: user?.id || '',
     },
   };
-  return response;
+  const responseString = stringifyResponse(response);
+  ws.send(responseString);
 };
 export const regRoute = new Route({ name: 'reg', handlerCore: regHandler });

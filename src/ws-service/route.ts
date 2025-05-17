@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws';
 import { TMessage, TMessageType } from '../api/message-map';
 import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
@@ -5,10 +6,12 @@ import { TDataBase } from '../db/init-db';
 type TRouteHandlerCore<T extends TMessageType> = ({
   data,
   db,
+  ws,
 }: {
   data: TMessage<T, 'request'>;
   db: TDataBase;
-}) => TMessage<T, 'response'>;
+  ws: WebSocket;
+}) => void;
 interface IRouteParams<T extends TMessageType> {
   name: T;
   handlerCore: TRouteHandlerCore<T>;
@@ -23,9 +26,9 @@ export default class Route<T extends TMessageType> {
     this.handlerCore = handlerCore;
   }
 
-  handler(data: TMessage<T, 'request'>) {
+  handler(ws: WebSocket, data: TMessage<T, 'request'>) {
     //TODO: Add wrapper
     const db = getDb();
-    return this.handlerCore({ data, db });
+    return this.handlerCore({ ws, data, db });
   }
 }

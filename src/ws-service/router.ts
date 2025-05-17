@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws';
 import { TMessage, TMessageType } from '../api/message-map';
 import getDb from '../db/get-db';
 import Route from './route';
@@ -13,7 +14,11 @@ export default class Router {
     this.routes.set(route.name, route);
   }
 
-  handler<T extends TMessageType>(name: T, data: TMessage<T, 'request'>) {
+  handler<T extends TMessageType>(
+    ws: WebSocket,
+    name: T,
+    data: TMessage<T, 'request'>
+  ) {
     const route = this.routes.get(name);
     if (!route) {
       //eslint-disable-next-line no-console
@@ -21,10 +26,10 @@ export default class Router {
       //TODO: add error throwing
       return;
     }
-    const result = route.handler(data);
+    route.handler(ws, data);
 
     //eslint-disable-next-line no-console
     console.log(`Users: ${JSON.stringify(getDb().users)}`);
-    return result;
+    console.log(`Connections: ${JSON.stringify(getDb().connections.records.length)}`);
   }
 }

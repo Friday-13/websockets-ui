@@ -16,7 +16,7 @@ export default abstract class RepositoryBase<T extends IBaseModel> {
     return this.records;
   }
 
-  delete(id?: string) {
+  delete(id?: string | number) {
     const recordIndex = this.records.findIndex((record) => record.id === id);
     if (recordIndex === -1)
       throw new DbError('recErr', `ID ${id} doesn't exist`);

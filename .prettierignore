@@ -1,7 +1,0 @@
-# .prettierignore
-# Ignore artifacts
-dist
-coverage
-front
-
-*.yaml

@@ -1,4 +1,4 @@
-import Route from './ws-service/route';
+import { regRoute } from './api/registration';
 import Router from './ws-service/router';
 import { WSService } from './ws-service/ws-service';
 
@@ -13,16 +13,9 @@ export default class App {
 
   start() {
     const router = new Router();
-    const dummyRoute = new Route({
-      name: 'dummy',
-      handler: () => {
-        //eslint-disable-next-line no-console
-        console.log('Dummy route handled!');
-      },
-    });
-    router.addRoute(dummyRoute);
+    router.addRoute(regRoute);
     //TODO: add routes to router
-    new WSService({ port: this.port });
+    new WSService({ port: this.port, router });
     //TODO: add router to routes
   }
 

@@ -1,4 +1,5 @@
 import { TMessage, TMessageType } from '../api/message-map';
+import getDb from '../db/get-db';
 import Route from './route';
 
 export default class Router {
@@ -20,7 +21,10 @@ export default class Router {
       //TODO: add error throwing
       return;
     }
-    const result = route.handlerCore(data);
+    const result = route.handler(data);
+
+    //eslint-disable-next-line no-console
+    console.log(`Users: ${JSON.stringify(getDb().users)}`);
     return result;
   }
 }

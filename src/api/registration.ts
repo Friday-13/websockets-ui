@@ -1,3 +1,6 @@
+import { TDataBase } from '../db/init-db';
+import { UserModel } from '../db/user-repository';
+import AuthError from '../errors/auth-error';
 import InputValidationError from '../errors/input-validation-error';
 import Route from '../ws-service/route';
 import { TMessage } from './message-map';
@@ -17,16 +20,28 @@ const validatePassword = (password: string) => {
   }
 };
 
-const regHandler = (
-  req: TMessage<'reg', 'request'>
-): TMessage<'reg', 'response'> => {
+const regHandler = ({
+  data,
+  db,
+}: {
+  data: TMessage<'reg', 'request'>;
+  db: TDataBase;
+}): TMessage<'reg', 'response'> => {
+  const { name, password } = data.data;
   let errorText = '';
   let error = false;
+  let user: UserModel | null = null;
   try {
-    validateName(req.data.name);
-    validatePassword(req.data.password);
-    //TODO: check is user in db
-    //TODO: add user to db
+    validateName(password);
+    validatePassword(name);
+    user = db.users.getByName(name);
+    if (user === null) {
+      user = db.users.create({ name, password });
+    } else {
+      if (password !== user.password) {
+        throw new AuthError('Incorrect password');
+      }
+    }
   } catch (err) {
     if (err instanceof Error) {
       errorText = err.message;
@@ -37,14 +52,13 @@ const regHandler = (
     }
   }
   const response: TMessage<'reg', 'response'> = {
-    type: req.type,
-    id: req.id,
+    type: data.type,
+    id: data.id,
     data: {
-      name: req.data.name,
+      name: name,
       error: error,
       errorText: errorText,
-      //TODO: set index from db
-      index: 1,
+      index: user?.id || '',
     },
   };
   return response;

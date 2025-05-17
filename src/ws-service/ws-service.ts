@@ -34,7 +34,7 @@ export class WSService {
 
   onMessage<T extends TMessageType>(ws: WebSocket, msg: RawData) {
     //eslint-disable-next-line no-console
-    console.log(`New message: ${JSON.stringify(msg)}`);
+    console.log(`New message: ${String(msg)}`);
 
     try {
       let data: TMessage<T, 'request'>;

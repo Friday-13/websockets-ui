@@ -5,10 +5,7 @@ export interface IMessageMap {
   };
   update_winners: {
     request: null;
-    response: {
-      name: string;
-      wins: number;
-    }[];
+    response: IWinner[];
   };
 }
 
@@ -22,6 +19,11 @@ interface IRegResponse {
   index: number | string;
   error: boolean;
   errorText: string;
+}
+
+interface IWinner {
+  name: string;
+  wins: number;
 }
 
 export type TMessageType = keyof IMessageMap;

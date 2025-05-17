@@ -2,14 +2,19 @@
 type TRouteHandlerCore = (data: unknown) => unknown;
 interface IRouteParams {
   name: string;
-  handler: TRouteHandlerCore;
+  handlerCore: TRouteHandlerCore;
 }
 export default class Route {
   name: string;
-  handler: TRouteHandlerCore;
+  handlerCore: TRouteHandlerCore;
 
-  constructor({ name, handler }: IRouteParams) {
+  constructor({ name, handlerCore }: IRouteParams) {
     this.name = name;
-    this.handler = handler;
+    this.handlerCore = handlerCore;
+  }
+
+  handler(data: unknown) {
+    //TODO: Add wrapper
+    return this.handlerCore(data)
   }
 }

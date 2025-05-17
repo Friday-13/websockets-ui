@@ -1,6 +1,6 @@
-import { WSService } from './ws-server/ws-server';
 import Route from './ws-service/route';
 import Router from './ws-service/router';
+import { WSService } from './ws-service/ws-service';
 
 const WS_PORT = 3000;
 

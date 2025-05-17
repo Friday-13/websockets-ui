@@ -18,7 +18,7 @@ export default class Router {
       //TODO: add error throwing
       return;
     }
-    const result = route.handler(data);
+    const result = route.handlerCore(data);
     return result;
   }
 }

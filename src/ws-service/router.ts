@@ -28,8 +28,9 @@ export default class Router {
     }
     route.handler(ws, data);
 
-    //eslint-disable-next-line no-console
     console.log(`Users: ${JSON.stringify(getDb().users)}`);
-    console.log(`Connections: ${JSON.stringify(getDb().connections.records.length)}`);
+    console.log(
+      `Connections: ${JSON.stringify(getDb().connections.records.length)}`
+    );
   }
 }

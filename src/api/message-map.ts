@@ -1,38 +1,20 @@
-export interface IMessageMap {
-  reg: {
-    request: IRegRequest;
-    response: IRegResponse;
-  };
-  update_winners: {
-    request: null;
-    response: IWinner[];
-  };
-}
+import { IGameMessageMap } from './game-message-map';
+import { IPlayerMessageMap } from './player-message-map';
+import { IRoomMessageMap } from './room-message-map';
+import { IShipsMessageMap } from './ships-message-map';
 
-interface IRegRequest {
-  name: string;
-  password: string;
-}
+export type TMessageMap = IPlayerMessageMap &
+  IRoomMessageMap &
+  IShipsMessageMap &
+  IGameMessageMap;
 
-interface IRegResponse {
-  name: string;
-  index: number | string;
-  error: boolean;
-  errorText: string;
-}
-
-interface IWinner {
-  name: string;
-  wins: number;
-}
-
-export type TMessageType = keyof IMessageMap;
+export type TMessageType = keyof TMessageMap;
 
 export type TMessage<
   T extends TMessageType = TMessageType,
-  D extends keyof IMessageMap[T] = keyof IMessageMap[T],
+  D extends keyof TMessageMap[T] = keyof TMessageMap[T],
 > = {
   type: T;
-  data: IMessageMap[T][D];
+  data: TMessageMap[T][D];
   id: number;
 };

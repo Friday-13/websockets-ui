@@ -1,16 +1,18 @@
+import { TMessage, TMessageType } from '../api/message-map';
 import Route from './route';
 
 export default class Router {
-  routes: Map<string, Route>;
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  routes: Map<string, Route<any>>;
   constructor() {
     this.routes = new Map();
   }
 
-  addRoute(route: Route) {
+  addRoute<T extends TMessageType>(route: Route<T>) {
     this.routes.set(route.name, route);
   }
 
-  handler(name: string, data: unknown) {
+  handler<T extends TMessageType>(name: T, data: TMessage<T, 'request'>) {
     const route = this.routes.get(name);
     if (!route) {
       //eslint-disable-next-line no-console

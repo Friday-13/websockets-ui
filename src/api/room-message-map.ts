@@ -9,10 +9,7 @@ export interface IRoomMessageMap {
   };
   create_game: {
     request: null;
-    response: {
-      idGame: string | number;
-      idPlayer: string | number;
-    };
+    response: ICreateGameResponse;
   };
   update_room: {
     request: null;
@@ -28,4 +25,9 @@ export interface IUpdateRoomResponse {
 export interface IRoomUser {
   name: string;
   index: number | string;
+}
+
+export interface ICreateGameResponse {
+  idGame: string | number;
+  idPlayer: string | number;
 }

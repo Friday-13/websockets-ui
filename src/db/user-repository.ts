@@ -10,7 +10,7 @@ export interface IUserData {
 }
 
 export interface IUser extends IUserData {
-  id: string;
+  id: string | number;
   wins: number;
 }
 

@@ -9,11 +9,11 @@ export interface IRoomData {
 }
 
 export interface IRoom extends IRoomData {
-  id: string;
+  id: number | string;
 }
 
 export class RoomModel implements IBaseModel {
-  id: number;
+  id: string | number;
   hostId: string | number;
   guestId?: string | number;
 
@@ -36,7 +36,7 @@ export class RoomRepository extends RepositoryBase<RoomModel> {
       room.hostId = roomData.id;
       room.guestId = roomData.guestId;
     } else {
-      throw new DbError('recErr', 'Room was delete or unexists');
+      throw new DbError('recErr', 'Room was deleted or unexists');
     }
     return room;
   }

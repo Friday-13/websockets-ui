@@ -1,6 +1,7 @@
 import AuthError from '../errors/auth-error';
 import DbError from '../errors/db-error';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
+import createGame from './create-game';
 import updateRoom from './update-room';
 
 const addUserToRoomHandler: TRouteHandlerCore<'add_user_to_room'> = ({
@@ -20,6 +21,7 @@ const addUserToRoomHandler: TRouteHandlerCore<'add_user_to_room'> = ({
     throw new DbError('recErr', 'Requested room not found');
   }
   room.guestId = connection.userId;
+  createGame(room.hostId, room.guestId);
   updateRoom();
 };
 

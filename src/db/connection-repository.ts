@@ -10,7 +10,7 @@ export interface IConnectionData {
 }
 
 export interface IConnection extends IConnectionData {
-  id: string;
+  id: string | number;
 }
 
 export class ConnectionModel implements IBaseModel {
@@ -45,5 +45,9 @@ export class ConnectionRepository extends RepositoryBase<ConnectionModel> {
 
   getByWs(ws: WebSocket) {
     return this.records.find((connection) => connection.ws === ws) || null;
+  }
+
+  getByUserId(id: string | number) {
+    return this.records.find((connection) => connection.userId === id) || null;
   }
 }

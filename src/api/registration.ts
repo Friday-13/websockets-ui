@@ -6,6 +6,7 @@ import stringifyResponse from '../utils/stringify-response';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
 import { sendPersonal } from '../ws-service/ws-server';
 import { TMessage } from './message-map';
+import updateRoom from './update-room';
 import { updateWinners } from './update-winners';
 
 const validateName = (name: string) => {
@@ -65,6 +66,7 @@ const regHandler: TRouteHandlerCore<'reg'> = ({ db, ws, data }) => {
   };
   const responseString = stringifyResponse(response);
   sendPersonal(responseString, ws);
+  updateRoom();
   updateWinners();
 };
 export const regRoute = new Route({ name: 'reg', handlerCore: regHandler });

@@ -3,6 +3,7 @@ import AuthError from '../errors/auth-error';
 import InputValidationError from '../errors/input-validation-error';
 import stringifyResponse from '../utils/stringify-response';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
+import { sendPersonal } from '../ws-service/ws-server';
 import { TMessage } from './message-map';
 import { updateWinners } from './update-winners';
 
@@ -57,7 +58,7 @@ const regHandler: TRouteHandlerCore<'reg'> = ({ db, ws, data }) => {
     },
   };
   const responseString = stringifyResponse(response);
-  ws.send(responseString);
+  sendPersonal(responseString, ws);
   updateWinners(ws);
 };
 export const regRoute = new Route({ name: 'reg', handlerCore: regHandler });

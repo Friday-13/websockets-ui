@@ -46,10 +46,18 @@ const createWSServer = (port: number) => {
   }
 };
 
-const broadcast = (message: string) => {
-  wss.clients.forEach((ws) => {
+const sendToMany = (message: string, clients: Set<WebSocket>) => {
+  clients.forEach((ws) => {
     ws.send(message);
   });
 };
 
-export { wss, createWSServer, broadcast };
+const sendToAll = (message: string) => {
+  sendToMany(message, wss.clients);
+};
+
+const sendPersonal = (message: string, client: WebSocket) => {
+  sendToMany(message, new Set([client]));
+};
+
+export { wss, createWSServer, sendToMany, sendToAll, sendPersonal };

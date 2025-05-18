@@ -20,12 +20,12 @@ export interface IRoomMessageMap {
   };
 }
 
-interface IUpdateRoomResponse {
+export interface IUpdateRoomResponse {
   roomId: number | string;
   roomUsers: IRoomUser[];
 }
 
-interface IRoomUser {
+export interface IRoomUser {
   name: string;
   index: number | string;
 }

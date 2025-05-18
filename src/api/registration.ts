@@ -1,5 +1,6 @@
 import { UserModel } from '../db/user-repository';
 import AuthError from '../errors/auth-error';
+import DbError from '../errors/db-error';
 import InputValidationError from '../errors/input-validation-error';
 import stringifyResponse from '../utils/stringify-response';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
@@ -38,6 +39,11 @@ const regHandler: TRouteHandlerCore<'reg'> = ({ db, ws, data }) => {
         throw new AuthError('Incorrect password');
       }
     }
+    const connection = db.connections.getByWs(ws);
+    if (connection === null) {
+      throw new DbError('recErr', 'Connection was closed or unexists');
+    }
+    connection.userId = user.id;
   } catch (err) {
     if (err instanceof Error) {
       errorText = err.message;
@@ -59,6 +65,6 @@ const regHandler: TRouteHandlerCore<'reg'> = ({ db, ws, data }) => {
   };
   const responseString = stringifyResponse(response);
   sendPersonal(responseString, ws);
-  updateWinners(ws);
+  updateWinners();
 };
 export const regRoute = new Route({ name: 'reg', handlerCore: regHandler });

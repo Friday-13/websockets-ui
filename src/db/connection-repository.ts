@@ -42,4 +42,8 @@ export class ConnectionRepository extends RepositoryBase<ConnectionModel> {
     }
     return connection;
   }
+
+  getByWs(ws: WebSocket) {
+    return this.records.find((connection) => connection.ws === ws) || null;
+  }
 }

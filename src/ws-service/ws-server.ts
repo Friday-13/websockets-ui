@@ -4,9 +4,11 @@ import { TMessage, TMessageType } from '../api/message-map';
 import Router from './router';
 import { regRoute } from '../api/registration';
 import { ConnectionModel } from '../db/connection-repository';
+import { createRoomRoute } from '../api/create-room';
 
 const router = new Router();
 router.addRoute(regRoute);
+router.addRoute(createRoomRoute);
 
 const wsMessageHandler = <T extends TMessageType>(
   ws: WebSocket,
@@ -15,7 +17,9 @@ const wsMessageHandler = <T extends TMessageType>(
   try {
     let data: TMessage<T, 'request'>;
     const parsedMessage = JSON.parse(String(msg));
-    const parsedData = JSON.parse(parsedMessage.data);
+    const parsedData =
+      parsedMessage.data === '' ? '' : JSON.parse(parsedMessage.data);
+    // const parsedData = JSON.parse(messageData);
     data = parsedMessage;
     data.data = parsedData;
     router.handler(ws, data.type, data);

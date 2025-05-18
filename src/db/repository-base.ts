@@ -8,7 +8,7 @@ export default abstract class RepositoryBase<T extends IBaseModel> {
     this.records = [];
   }
 
-  getById(id?: string) {
+  getById(id?: string | number) {
     return this.records.find((record) => record.id === id) || null;
   }
 

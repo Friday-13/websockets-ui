@@ -3,15 +3,14 @@ import { TMessage, TMessageType } from '../api/message-map';
 import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
 
-type TRouteHandlerCore<T extends TMessageType> = ({
-  data,
-  db,
-  ws,
-}: {
+export interface IRouteHandlerCoreParams<T extends TMessageType> {
   data: TMessage<T, 'request'>;
   db: TDataBase;
   ws: WebSocket;
-}) => void;
+}
+export type TRouteHandlerCore<T extends TMessageType> = (
+  params: IRouteHandlerCoreParams<T>
+) => void;
 interface IRouteParams<T extends TMessageType> {
   name: T;
   handlerCore: TRouteHandlerCore<T>;

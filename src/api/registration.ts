@@ -1,11 +1,10 @@
-import { WebSocket } from 'ws';
-import { TDataBase } from '../db/init-db';
 import { UserModel } from '../db/user-repository';
 import AuthError from '../errors/auth-error';
 import InputValidationError from '../errors/input-validation-error';
 import stringifyResponse from '../utils/stringify-response';
-import Route from '../ws-service/route';
+import Route, { TRouteHandlerCore } from '../ws-service/route';
 import { TMessage } from './message-map';
+import { updateWinners } from './update-winners';
 
 const validateName = (name: string) => {
   if (name.length < 5) {
@@ -22,15 +21,7 @@ const validatePassword = (password: string) => {
   }
 };
 
-const regHandler = ({
-  data,
-  db,
-  ws,
-}: {
-  data: TMessage<'reg', 'request'>;
-  db: TDataBase;
-  ws: WebSocket;
-}) => {
+const regHandler: TRouteHandlerCore<'reg'> = ({ db, ws, data }) => {
   const { name, password } = data.data;
   let errorText = '';
   let error = false;
@@ -67,5 +58,6 @@ const regHandler = ({
   };
   const responseString = stringifyResponse(response);
   ws.send(responseString);
+  updateWinners(ws);
 };
 export const regRoute = new Route({ name: 'reg', handlerCore: regHandler });

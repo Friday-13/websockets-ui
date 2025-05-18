@@ -7,6 +7,7 @@ import { ConnectionModel } from '../db/connection-repository';
 
 const router = new Router();
 router.addRoute(regRoute);
+
 const wsMessageHandler = <T extends TMessageType>(
   ws: WebSocket,
   msg: RawData
@@ -45,4 +46,10 @@ const createWSServer = (port: number) => {
   }
 };
 
-export { wss, createWSServer };
+const broadcast = (message: string) => {
+  wss.clients.forEach((ws) => {
+    ws.send(message);
+  });
+};
+
+export { wss, createWSServer, broadcast };

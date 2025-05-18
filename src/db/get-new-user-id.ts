@@ -1,8 +1,6 @@
-import getDb from './get-db';
-
+let userId = 0;
 const getNewUserId = () => {
-  const db = getDb();
-  return db.users.records.length;
+  return (userId += 1);
 };
 
 export { getNewUserId as default };

@@ -1,8 +1,6 @@
-import getDb from './get-db';
-
+let connectionId = 0;
 const getNewConnectionId = () => {
-  const db = getDb();
-  return db.connections.records.length;
+  return (connectionId += 1);
 };
 
 export { getNewConnectionId as default };

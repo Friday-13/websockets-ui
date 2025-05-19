@@ -60,7 +60,7 @@ const isGameFinished = (player: IPlayer) => {
   return !player.gameState.ships.some((ship) => ship.hp > 0);
 };
 
-const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
+export const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
   const gameId = data.data.gameId;
   const game = getGame(db, gameId);
 
@@ -78,6 +78,7 @@ const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
 
   const attackResult = getAttackResult(enemyPlayer.gameState.field, position);
   if (attackResult === null) {
+    turn(game.id, 'current');
     return;
   }
   responseData.status = attackResult;

@@ -8,6 +8,7 @@ import { createRoomRoute } from '../api/create-room';
 import { addUserToRoomRoute } from '../api/add-user-to-room';
 import { addShipsRoute } from '../api/add-ships';
 import { attackRoute } from '../api/attack';
+import { randoAttackRoute } from '../api/random-attack';
 
 const router = new Router();
 router.addRoute(regRoute);
@@ -15,6 +16,7 @@ router.addRoute(createRoomRoute);
 router.addRoute(addUserToRoomRoute);
 router.addRoute(addShipsRoute);
 router.addRoute(attackRoute);
+router.addRoute(randoAttackRoute);
 
 const wsMessageHandler = <T extends TMessageType>(
   ws: WebSocket,

@@ -4,8 +4,8 @@ export interface IGameMessageMap {
     response: IAttackResponse;
   };
   randomAttack: {
-    request: null;
-    response: IRandomAttackResponse;
+    request: IRandomAttackRequest;
+    response: null;
   };
 
   turn: {
@@ -36,7 +36,7 @@ export interface IAttackResponse {
 
 export type TAttackStatus = 'miss' | 'killed' | 'shot';
 
-interface IRandomAttackResponse {
+interface IRandomAttackRequest {
   gameId: number | string;
   indexPlayer: number | string;
 }

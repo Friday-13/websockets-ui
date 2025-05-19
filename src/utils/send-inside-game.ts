@@ -1,4 +1,4 @@
-import { TMessage, TMessageMap, TMessageType } from '../api/message-map';
+import { TMessage, TMessageType } from '../api/message-map';
 import { IGame } from '../db/game-repository';
 import { TDataBase } from '../db/init-db';
 import DbError from '../errors/db-error';

@@ -33,10 +33,10 @@ const getTarget = (field: TFieldCell[][], position: IPosition) => {
 const getAttackResult = (
   field: TFieldCell[][],
   position: IPosition
-): TAttackStatus => {
+): TAttackStatus | null => {
   const target = getTarget(field, position);
 
-  if (target === null || target.hp <= 0) {
+  if (target === null) {
     return 'miss';
   }
 
@@ -45,7 +45,7 @@ const getAttackResult = (
   ) as IShipCell;
 
   if (targetCell.isHitted) {
-    return 'miss';
+    return null;
   }
 
   target.hp -= 1;
@@ -77,6 +77,9 @@ const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
   };
 
   const attackResult = getAttackResult(enemyPlayer.gameState.field, position);
+  if (attackResult === null) {
+    return;
+  }
   responseData.status = attackResult;
 
   const response: TMessage<'attack', 'response'> = {

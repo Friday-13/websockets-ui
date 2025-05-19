@@ -35,12 +35,14 @@ export interface IGame {
   id: number | string;
   player1: IPlayer;
   player2: IPlayer;
+  currentPlayer: number | string;
 }
 
 export class GameModel implements IBaseModel {
   id: string | number;
   player1: IPlayer;
   player2: IPlayer;
+  currentPlayer: number | string;
 
   constructor({ playerId1, playerId2 }: IGameData) {
     this.id = getNewRoomId();
@@ -52,6 +54,7 @@ export class GameModel implements IBaseModel {
       id: playerId2,
       gameState: GameModel.initGameState(),
     };
+    this.currentPlayer = this.player1.id;
   }
   static initGameState(): IGameState {
     return { field: generateEmptyField(), ships: [] };

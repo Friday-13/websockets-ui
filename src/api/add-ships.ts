@@ -3,6 +3,7 @@ import DbError from '../errors/db-error';
 import IPosition from '../types/iposition';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
 import { startGame } from './start-game';
+import { turn } from './turn';
 
 const generateCells = (
   position: IPosition,
@@ -68,6 +69,7 @@ const addShipsHandler: TRouteHandlerCore<'add_ships'> = ({ db, data }) => {
     game.player2.gameState.ships.length !== 0
   ) {
     startGame(game);
+    turn(game.id, 'current');
   }
 };
 

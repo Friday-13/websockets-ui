@@ -2,9 +2,8 @@ import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
 import DbError from '../errors/db-error';
 import stringifyResponse from '../utils/stringify-response';
-import { sendPersonal, sendToAll } from '../ws-service/ws-server';
+import { sendPersonal } from '../ws-service/ws-server';
 import { TMessage } from './message-map';
-import { IUpdateRoomResponse } from './room-message-map';
 
 const generateCreateGameMessage = (
   gameId: string | number,

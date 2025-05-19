@@ -1,3 +1,5 @@
+import IShip from '../types/iship';
+
 export interface IShipsMessageMap {
   add_ships: {
     request: IAddShipsRequest;
@@ -13,16 +15,6 @@ interface IAddShipsRequest {
   gameId: number | string;
   ships: IShip[];
   indexPlayer: number | string;
-}
-
-interface IShip {
-  position: {
-    x: number;
-    y: number;
-  };
-  direction: boolean;
-  length: number;
-  type: 'small' | 'medium' | 'large';
 }
 
 interface IStartGameResponse {

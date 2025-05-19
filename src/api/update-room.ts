@@ -1,6 +1,6 @@
 import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
-import DbError from '../errors/db-error';
+import getUserById from '../utils/get-user-by-id';
 import stringifyResponse from '../utils/stringify-response';
 import { sendToAll } from '../ws-service/ws-server';
 import { TMessage } from './message-map';
@@ -11,13 +11,7 @@ const generateAvaliableRooms = (db: TDataBase) => {
   const avaliableRoomsData: IUpdateRoomResponse[] = [];
   for (const room of allRooms) {
     if (room.guestId !== undefined) continue;
-    const roomHost = db.users.getById(room.hostId);
-    if (roomHost === null) {
-      throw new DbError(
-        'recErr',
-        `Invalid reference: user ID ${room.guestId} is missing in the users table`
-      );
-    }
+    const roomHost = getUserById(room.hostId);
     const avaliableRoom: IUpdateRoomResponse = {
       roomId: room.id,
       roomUsers: [

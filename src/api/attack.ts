@@ -1,9 +1,10 @@
-import { IGame, IShipCell, TFieldCell } from '../db/game-repository';
+import { IGame, IPlayer, IShipCell, TFieldCell } from '../db/game-repository';
 import { TDataBase } from '../db/init-db';
 import DbError from '../errors/db-error';
 import IPosition from '../types/iposition';
 import sendInsideGame from '../utils/send-inside-game';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
+import { finish } from './finish';
 import { IAttackResponse, TAttackStatus } from './game-message-map';
 import { TMessage } from './message-map';
 import { turn } from './turn';
@@ -55,6 +56,10 @@ const getAttackResult = (
   return 'killed';
 };
 
+const isGameFinished = (player: IPlayer) => {
+  return !player.gameState.ships.some((ship) => ship.hp > 0);
+};
+
 const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
   const gameId = data.data.gameId;
   const game = getGame(db, gameId);
@@ -80,6 +85,13 @@ const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
     data: responseData,
   };
   sendInsideGame(game, response, db);
+  //TODO: add state for cells around if kill
+  if (attackResult === 'killed') {
+    if (isGameFinished(enemyPlayer)) {
+      finish(game, currentPlayer);
+      return;
+    }
+  }
 
   if (attackResult === 'miss') {
     turn(game.id, 'next');

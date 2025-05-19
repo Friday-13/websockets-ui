@@ -1,4 +1,11 @@
-import { IGame, IPlayer, IShipCell, TFieldCell } from '../db/game-repository';
+import {
+  IGame,
+  IPlayer,
+  IShipCell,
+  IShipState,
+  TFieldCell,
+} from '../db/game-repository';
+import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
 import DbError from '../errors/db-error';
 import IPosition from '../types/iposition';
@@ -91,17 +98,77 @@ export const performAttack = (
     data: responseData,
   };
   sendInsideGame(game, response, db);
-  return { attackResult, enemyPlayer, currentPlayer, game };
+  return { attackResult, position, enemyPlayer, currentPlayer, game };
+};
+
+const getNeighborCells = (field: TFieldCell[][], position: IPosition) => {
+  const neighborPositions: IPosition[] = [];
+  for (let i = -1; i < 2; i += 1) {
+    for (let j = -1; j < 2; j += 1) {
+      if (i === 0 && j === 0) {
+        continue;
+      }
+
+      const newPosition = {
+        x: position.x + i,
+        y: position.y + j,
+      };
+
+      if (newPosition.x < 0 || newPosition.x >= field.length) {
+        continue;
+      }
+      if (newPosition.y < 0 || newPosition.y >= field.length) {
+        continue;
+      }
+      if (field[newPosition.y][newPosition.x] !== null) {
+        continue;
+      }
+      neighborPositions.push(newPosition);
+    }
+  }
+  return neighborPositions;
+};
+
+const attackNeighborCells = (
+  currentPlayer: IPlayer,
+  enemyPlayer: IPlayer,
+  targetPosition: IPosition,
+  game: IGame
+) => {
+  const db = getDb();
+  const enemyField = enemyPlayer.gameState.field;
+  const enemyShip = enemyField[targetPosition.y][
+    targetPosition.x
+  ] as IShipState;
+  const enemyCells = enemyShip.cells;
+  const cellsAround: IPosition[] = [];
+  for (const cell of enemyCells) {
+    cellsAround.push(...getNeighborCells(enemyField, { x: cell.x, y: cell.y }));
+  }
+  getNeighborCells(enemyField, targetPosition);
+  for (const cell of cellsAround) {
+    const response: TMessage<'attack', 'response'> = {
+      data: {
+        position: cell,
+        currentPlayer: currentPlayer.id,
+        status: 'miss',
+      },
+      id: 0,
+      type: 'attack',
+    };
+    sendInsideGame(game, response, db);
+  }
 };
 
 export const attackEffect = (
   attackResult: TAttackStatus,
+  targetPosition: IPosition,
   currentPlayer: IPlayer,
   enemyPlayer: IPlayer,
   game: IGame
 ) => {
   if (attackResult === 'killed') {
-    //TODO: add state for cells around if kill
+    attackNeighborCells(currentPlayer, enemyPlayer, targetPosition, game);
     if (isGameFinished(enemyPlayer)) {
       finish(game, currentPlayer);
       return;
@@ -115,11 +182,12 @@ export const attackEffect = (
   }
 };
 
-const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
+export const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
   const performedAttack = performAttack(db, data);
   if (performedAttack !== null) {
-    const { attackResult, enemyPlayer, currentPlayer, game } = performedAttack;
-    attackEffect(attackResult, currentPlayer, enemyPlayer, game);
+    const { attackResult, position, enemyPlayer, currentPlayer, game } =
+      performedAttack;
+    attackEffect(attackResult, position, currentPlayer, enemyPlayer, game);
   }
 };
 export const attackRoute = new Route({

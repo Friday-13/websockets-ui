@@ -27,7 +27,7 @@ const randomAttackHandler: TRouteHandlerCore<'randomAttack'> = ({
   const performedAttack = performAttack(db, attackRequest);
   if (performedAttack !== null) {
     const { attackResult, enemyPlayer, currentPlayer, game } = performedAttack;
-    attackEffect(attackResult, currentPlayer, enemyPlayer, game);
+    attackEffect(attackResult, position, currentPlayer, enemyPlayer, game);
   } else {
     randomAttackHandler({ db, ws, data });
   }

@@ -60,12 +60,15 @@ const isGameFinished = (player: IPlayer) => {
   return !player.gameState.ships.some((ship) => ship.hp > 0);
 };
 
-export const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
+export const performAttack = (
+  db: TDataBase,
+  data: TMessage<'attack', 'request'>
+) => {
   const gameId = data.data.gameId;
   const game = getGame(db, gameId);
 
   if (!isYourTurn(game, data.data.indexPlayer)) {
-    return;
+    return null;
   }
   const [currentPlayer, enemyPlayer] = getPlayerPositions(game);
   const position: IPosition = { x: data.data.x, y: data.data.y };
@@ -78,8 +81,7 @@ export const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
 
   const attackResult = getAttackResult(enemyPlayer.gameState.field, position);
   if (attackResult === null) {
-    turn(game.id, 'current');
-    return;
+    return null;
   }
   responseData.status = attackResult;
 
@@ -89,8 +91,17 @@ export const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
     data: responseData,
   };
   sendInsideGame(game, response, db);
-  //TODO: add state for cells around if kill
+  return { attackResult, enemyPlayer, currentPlayer, game };
+};
+
+export const attackEffect = (
+  attackResult: TAttackStatus,
+  currentPlayer: IPlayer,
+  enemyPlayer: IPlayer,
+  game: IGame
+) => {
   if (attackResult === 'killed') {
+    //TODO: add state for cells around if kill
     if (isGameFinished(enemyPlayer)) {
       finish(game, currentPlayer);
       return;
@@ -101,6 +112,14 @@ export const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
     turn(game.id, 'next');
   } else {
     turn(game.id, 'current');
+  }
+};
+
+const attackHandler: TRouteHandlerCore<'attack'> = ({ db, data }) => {
+  const performedAttack = performAttack(db, data);
+  if (performedAttack !== null) {
+    const { attackResult, enemyPlayer, currentPlayer, game } = performedAttack;
+    attackEffect(attackResult, currentPlayer, enemyPlayer, game);
   }
 };
 export const attackRoute = new Route({

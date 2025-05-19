@@ -1,7 +1,7 @@
 import IPosition from '../types/iposition';
 import getRandomNumber from '../utils/get-random-number';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
-import { attackHandler } from './attack';
+import { attackEffect, performAttack } from './attack';
 import { TMessage } from './message-map';
 
 const generateRandomPosition = (): IPosition => {
@@ -24,7 +24,13 @@ const randomAttackHandler: TRouteHandlerCore<'randomAttack'> = ({
       gameId: data.data.gameId,
     },
   };
-  attackHandler({ db, data: attackRequest, ws });
+  const performedAttack = performAttack(db, attackRequest);
+  if (performedAttack !== null) {
+    const { attackResult, enemyPlayer, currentPlayer, game } = performedAttack;
+    attackEffect(attackResult, currentPlayer, enemyPlayer, game);
+  } else {
+    randomAttackHandler({ db, ws, data });
+  }
 };
 export const randoAttackRoute = new Route({
   name: 'randomAttack',

@@ -26,7 +26,6 @@ export default class Route<T extends TMessageType> {
   }
 
   handler(ws: WebSocket, data: TMessage<T, 'request'>) {
-    //TODO: Add wrapper
     const db = getDb();
     return this.handlerCore({ ws, data, db });
   }

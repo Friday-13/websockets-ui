@@ -1,4 +1,3 @@
-import { IGame } from '../db/game-repository';
 import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
 import DbError from '../errors/db-error';
@@ -6,7 +5,7 @@ import stringifyResponse from '../utils/stringify-response';
 import { sendPersonal } from '../ws-service/ws-server';
 import { TMessage } from './message-map';
 
-type TNextPlayer = 'next' | 'current';
+export type TNextPlayer = 'next' | 'current';
 
 const turnHandler = (
   db: TDataBase,

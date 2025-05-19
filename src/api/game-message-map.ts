@@ -25,7 +25,7 @@ interface IAttackRequest {
   indexPlayer: number | string;
 }
 
-interface IAttackResponse {
+export interface IAttackResponse {
   position: {
     x: number;
     y: number;

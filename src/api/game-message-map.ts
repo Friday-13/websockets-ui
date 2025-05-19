@@ -31,8 +31,10 @@ export interface IAttackResponse {
     y: number;
   };
   currentPlayer: number | string;
-  status: 'miss' | 'killed' | 'shot';
+  status: TAttackStatus;
 }
+
+export type TAttackStatus = 'miss' | 'killed' | 'shot';
 
 interface IRandomAttackResponse {
   gameId: number | string;

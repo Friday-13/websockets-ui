@@ -1,8 +1,7 @@
 import getDb from '../db/get-db';
 import { TDataBase } from '../db/init-db';
 import DbError from '../errors/db-error';
-import stringifyResponse from '../utils/stringify-response';
-import { sendPersonal } from '../ws-service/ws-server';
+import sendInsideGame from '../utils/send-inside-game';
 import { TMessage } from './message-map';
 
 export type TNextPlayer = 'next' | 'current';
@@ -29,25 +28,15 @@ const turnHandler = (
       nextPlayerId = game.player1.id;
     }
   }
-
-  for (const player of [game.player1, game.player2]) {
-    const response: TMessage<'turn', 'response'> = {
-      type: 'turn',
-      id: 0,
-      data: {
-        currentPlayer: nextPlayerId,
-      },
-    };
-    const connection = db.connections.getByUserId(player.id);
-    if (!connection) {
-      throw new DbError(
-        'recErr',
-        `There's no connection with user id ${player.id}`
-      );
-    }
-    const responseString = stringifyResponse(response);
-    sendPersonal(responseString, connection.ws);
-  }
+  game.currentPlayer = nextPlayerId;
+  const response: TMessage<'turn', 'response'> = {
+    type: 'turn',
+    id: 0,
+    data: {
+      currentPlayer: nextPlayerId,
+    },
+  };
+  sendInsideGame(game, response, db);
 };
 
 export const turn = (gameId: string | number, nextPlayer: TNextPlayer) => {

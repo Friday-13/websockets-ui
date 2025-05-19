@@ -20,6 +20,11 @@ const addUserToRoomHandler: TRouteHandlerCore<'add_user_to_room'> = ({
   if (room === null) {
     throw new DbError('recErr', 'Requested room not found');
   }
+
+  if (room.hostId === connection.userId) {
+    return;
+  }
+
   room.guestId = connection.userId;
   createGame(room.hostId, room.guestId);
   updateRoom();

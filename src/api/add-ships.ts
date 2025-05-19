@@ -2,6 +2,7 @@ import { IShipCell, IShipState, TFieldCell } from '../db/game-repository';
 import DbError from '../errors/db-error';
 import IPosition from '../types/iposition';
 import Route, { TRouteHandlerCore } from '../ws-service/route';
+import { startGame } from './start-game';
 
 const generateCells = (
   position: IPosition,
@@ -36,7 +37,7 @@ const updateField = (field: TFieldCell[][], shipState: IShipState) => {
   return field;
 };
 
-const addShipsHandler: TRouteHandlerCore<'add_ships'> = ({ db, _ws, data }) => {
+const addShipsHandler: TRouteHandlerCore<'add_ships'> = ({ db, data }) => {
   const [gameId, playerId] = [data.data.gameId, data.data.indexPlayer];
   const game = db.games.getById(gameId);
   if (!game) {
@@ -62,8 +63,12 @@ const addShipsHandler: TRouteHandlerCore<'add_ships'> = ({ db, _ws, data }) => {
     player.gameState.ships.push(shipState);
     updateField(player.gameState.field, shipState);
   }
-
-  //TODO: add start game if
+  if (
+    game.player1.gameState.ships.length !== 0 &&
+    game.player2.gameState.ships.length !== 0
+  ) {
+    startGame(game);
+  }
 };
 
 export const addShipsRoute = new Route({
